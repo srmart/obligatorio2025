@@ -7,6 +7,7 @@ public class Coleccion {
 
     private int id;
     private String nombre;
+    private int PRUEBA;
     //private final MyList<Peliculas> peliculas;
 
     public int calcIngresos(){
