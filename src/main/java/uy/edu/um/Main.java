@@ -25,7 +25,7 @@ public class Main {
                 //Carga de Datos
                 break;
             case 2:
-                int consulta=0;
+                int consulta;
                 do{
                     System.out.println("1. Top 5 de las películas que más calificaciones por idioma.");
                     System.out.println("2. Top 10 de las películas que mejor calificación media tienen por parte de los usuarios.");
@@ -68,8 +68,6 @@ public class Main {
                 break;
             default:
                 System.out.println("Opción inválida. Intente de nuevo.");
-
-
 
 
         }
