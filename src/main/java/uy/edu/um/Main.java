@@ -18,7 +18,7 @@ public class Main {
             System.out.println("2. Ejecutar consultas");
             System.out.println("3. Salir");
             opcion=leer.nextInt();
-        } while(opcion<1 || opcion<3);
+        } while(opcion != 3);
 
         switch (opcion){
             case 1:
@@ -34,6 +34,7 @@ public class Main {
                     System.out.println("5. Actor con más calificaciones recibidas en cada mes del año.");
                     System.out.println("6. Usuarios con más calificaciones por género");
                     System.out.println("7. Salir");
+                    consulta=leer.nextInt();
                     switch (consulta){
                         case 1:
                             // Consulta 1
@@ -65,6 +66,10 @@ public class Main {
             case 3:
                 System.exit(0);
                 break;
+            default:
+                System.out.println("Opción inválida. Intente de nuevo.");
+
+
 
 
         }
