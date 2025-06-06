@@ -1,6 +1,10 @@
 package entities;
 
 import lombok.Data;
+import uy.edu.um.tad.hash.MyHash;
+import uy.edu.um.tad.hash.MyHashImpl;
+import uy.edu.um.tad.linkedlist.MyLinkedListImpl;
+import uy.edu.um.tad.linkedlist.MyList;
 
 @Data
 public class Pelicula {
@@ -9,9 +13,9 @@ public class Pelicula {
     private String titulo_original;
     private int presupuesto;
     private int ingresos;
-    //private Coleccion perteneceA;
-    //private final MyList<Rating> ratings;
-    //private final MyList<Actores> actores;
+    private Coleccion perteneceAColeccion;
+    private MyList<Rating> ratings = new MyLinkedListImpl<>(); //todas las evaluaciones realizadas a una pelicula
+    //private MyList<Actores> actores;
 
 
     public Pelicula(int id, String titulo_original, int presupuesto, int ingresos) {
@@ -30,15 +34,23 @@ public class Pelicula {
     public double ratingPromedio(){
         double rating = 0.0;
         //Va a recorrer la "lista" de ratings sumandolos, luego divide por el size de la lista.
+        for(int i = 0; i < this.getRatings().size() ; i++){
+            rating += this.getRatings().get(i).getRating();
+        }
+        rating = rating / this.getRatings().size();
         return rating;
     }
 
     public int cantEvaluaciones(int idPelicula){
         int result = 0;
         //Recorre la lista de ratings y para un mismo idPelicula suma 1 el resultado
+        for(int i = 0; i<getRatings().size(); i++){
+            result += 1;
+        }
         return result;
     }
 
+    //este metodo se debería implementar en el sistema, donde hay un hash de calificaciones por usuario.
     public int cantEvaluacionesUser(int idUsuario){
         int result = 0;
         //Recorre la lista de ratings y para un mismo idUsuario suma 1 el resultado
