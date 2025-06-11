@@ -9,16 +9,10 @@ import uy.edu.um.tad.linkedlist.MyList;
 @Data
 public class UMovieSist {
 
-    private MyHash<Integer, Pelicula> peliculas;
-    private MyHash<Integer, MyList<Rating>> ratingsPorUsuario; //todas las evaluaciones realizadas por usuario.
-    private MyHash<Integer, Coleccion> colecciones;
-    private MyHash<String, MyList<Pelicula>> peliculasPorDirector;
+    private final CargaDeDatos datos;
 
-    public UMovieSist(){
-        this.peliculas = new MyHashImpl<>();
-        this.ratingsPorUsuario = new MyHashImpl<>();
-        this.colecciones = new MyHashImpl<>();
-        this.peliculasPorDirector = new MyHashImpl<>();
+    public UMovieSist (CargaDeDatos datos){
+        this.datos = datos;
     }
 
     public MyList<String> top5_peliculas_mas_calificadas_por_idioma_original(){

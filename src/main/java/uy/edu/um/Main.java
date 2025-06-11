@@ -1,5 +1,6 @@
 package uy.edu.um;
 import com.opencsv.CSVReader;
+import entities.CargaDeDatos;
 import lombok.Data;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -7,7 +8,7 @@ import org.json.JSONObject;
 import java.util.Scanner;
 
 @Data
-public class Main {
+public class Main extends CargaDeDatos {
     public static void main(String[] args) {
 
         Scanner leer = new Scanner(System.in);
@@ -34,6 +35,8 @@ public class Main {
             switch (opcion){
                 case 1:
                     //Carga de Datos
+                    CargaDeDatos cargaDeDatos = new CargaDeDatos();
+                    cargaDeDatos.cargaDatos();
                     break;
                 case 2:
                     int consulta=0;

@@ -1,8 +1,6 @@
 package entities;
 
 import lombok.Data;
-import uy.edu.um.tad.hash.MyHash;
-import uy.edu.um.tad.hash.MyHashImpl;
 import uy.edu.um.tad.linkedlist.MyLinkedListImpl;
 import uy.edu.um.tad.linkedlist.MyList;
 
@@ -10,24 +8,25 @@ import uy.edu.um.tad.linkedlist.MyList;
 public class Pelicula {
 
     private int id;
-    private String titulo_original;
-    private int presupuesto;
-    private int ingresos;
-    private Coleccion perteneceAColeccion;
+    private String titulo;
+    private long presupuesto;
+    private long ingresos;
+    private Coleccion coleccion;
     private MyList<Rating> ratings = new MyLinkedListImpl<>(); //todas las evaluaciones realizadas a una pelicula
     //private MyList<Actores> actores;
 
 
-    public Pelicula(int id, String titulo_original, int presupuesto, int ingresos) {
+    public Pelicula(int id, String titulo, long presupuesto, long ingresos) {
         this.id = id;
-        this.titulo_original = titulo_original;
+        this.titulo = titulo;
         this.presupuesto = presupuesto;
         this.ingresos = ingresos;
     }
 
-    public int gananciasGeneradas(){
-        int ganancias = 0;
+    public long gananciasGeneradas(){
+        long ganancias = 0;
         //Se debe hacer la diferencia entre los ingresos y el presupuesto.
+        ganancias = ingresos - presupuesto;
         return ganancias;
     }
 
@@ -41,7 +40,7 @@ public class Pelicula {
         return rating;
     }
 
-    public int cantEvaluaciones(int idPelicula){
+    public int cantEvaluacionesPelicula(int idPelicula){
         int result = 0;
         //Recorre la lista de ratings y para un mismo idPelicula suma 1 el resultado
         for(int i = 0; i<getRatings().size(); i++){

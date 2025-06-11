@@ -9,12 +9,18 @@ public class Coleccion {
 
     private int id;
     private String nombre;
-    private int PRUEBA;
-    private MyList<Pelicula> peliculas = new MyLinkedListImpl<>();
+    private final MyList<Pelicula> peliculas = new MyLinkedListImpl<>();
 
-    public int calcIngresos(){
-        int ingresos = 0;
+    public Coleccion(int id, String nombre){
+        this.id = id;
+        this.nombre = nombre;
+    }
+    public long calcIngresos(){
+        long ingresos = 0;
         //Toma la suma de ganancias de todas las peliculas y las retorna.
+        for(int i = 0; i< peliculas.size(); i++){
+            ingresos += peliculas.get(i).gananciasGeneradas();
+        }
         return ingresos;
     }
 
