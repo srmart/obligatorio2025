@@ -4,21 +4,26 @@ import lombok.Data;
 import uy.edu.um.tad.linkedlist.MyLinkedListImpl;
 import uy.edu.um.tad.linkedlist.MyList;
 
+import java.util.Comparator;
+
 @Data
-public class Pelicula {
+public class Pelicula implements Comparable<Pelicula>{
 
     private int id;
     private String titulo;
+    private String idiomaOriginal;
     private long presupuesto;
     private long ingresos;
     private Coleccion coleccion;
-    private MyList<Rating> ratings = new MyLinkedListImpl<>(); //todas las evaluaciones realizadas a una pelicula
+    private final MyList<Rating> ratings = new MyLinkedListImpl<>(); //todas las evaluaciones realizadas a una pelicula
     //private MyList<Actores> actores;
+    static Comparator<Pelicula> comparator;
 
 
-    public Pelicula(int id, String titulo, long presupuesto, long ingresos) {
+    public Pelicula(int id, String titulo, String idiomaOriginal, long presupuesto, long ingresos) {
         this.id = id;
         this.titulo = titulo;
+        this.idiomaOriginal = idiomaOriginal;
         this.presupuesto = presupuesto;
         this.ingresos = ingresos;
     }
@@ -49,11 +54,35 @@ public class Pelicula {
         return result;
     }
 
-    //este metodo se debería implementar en el sistema, donde hay un hash de calificaciones por usuario.
-    public int cantEvaluacionesUser(int idUsuario){
-        int result = 0;
-        //Recorre la lista de ratings y para un mismo idUsuario suma 1 el resultado
-        return result;
+    public static Comparator<Pelicula> porCantRating(){
+        return (Pelicula p1, Pelicula p2) -> Integer.compare(p2.cantEvaluacionesPelicula(p2.getId()), p1.cantEvaluacionesPelicula(p1.getId()));
     }
+    public Comparator<Pelicula> avgRating() {
+        return (Pelicula p1, Pelicula p2) -> Double.compare(p2.ratingPromedio(),p1.ratingPromedio());
+    }
+
+    public String toStringFunc1(){
+        return "ID: "+this.id +" TITULO: "+ this.titulo +" IDIOMA ORIGINAL: "+this.getIdiomaOriginal()+ " TOTAL DE EVALUACIONES: "+this.cantEvaluacionesPelicula(this.id);
+    }
+
+
+
+    @Override
+    public int compareTo(Pelicula p) {
+        return comparator.compare(this, p);
+    }
+
+
+
+
+
+    //este metodo se debería implementar en el sistema, donde hay un hash de calificaciones por usuario.
+//    public int cantEvaluacionesUser(int idUsuario){
+//        int result = 0;
+//        //Recorre la lista de ratings y para un mismo idUsuario suma 1 el resultado
+//        return result;
+//    }
+
+
 
 }

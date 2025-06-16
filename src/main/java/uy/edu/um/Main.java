@@ -1,6 +1,7 @@
 package uy.edu.um;
 import com.opencsv.CSVReader;
 import entities.CargaDeDatos;
+import entities.UMovieSist;
 import lombok.Data;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,6 +11,10 @@ import java.util.Scanner;
 @Data
 public class Main extends CargaDeDatos {
     public static void main(String[] args) {
+
+        final CargaDeDatos cargaDeDatos = new CargaDeDatos();
+
+        UMovieSist sistemaPrueba = new UMovieSist(cargaDeDatos);
 
         Scanner leer = new Scanner(System.in);
         int opcion=0;
@@ -35,7 +40,6 @@ public class Main extends CargaDeDatos {
             switch (opcion){
                 case 1:
                     //Carga de Datos
-                    CargaDeDatos cargaDeDatos = new CargaDeDatos();
                     cargaDeDatos.cargaDatos();
                     break;
                 case 2:
@@ -64,6 +68,8 @@ public class Main extends CargaDeDatos {
                         switch (consulta){
                             case 1:
                                 // Consulta 1
+                                UMovieSist sistemaPrueb = new UMovieSist(cargaDeDatos);
+                                sistemaPrueb.top5_peliculas_mas_calificadas_por_idioma_original();
                                 break;
                             case 2:
                                 // Consulta 2
