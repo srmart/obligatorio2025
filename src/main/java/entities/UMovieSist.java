@@ -17,8 +17,30 @@ public class UMovieSist {
 
     public MyList<String> top5_peliculas_mas_calificadas_por_idioma_original(){
         MyList<String> resultado = new MyLinkedListImpl<>();
+        MyHash<String, MyList<Pelicula>> peliculasPorIdioma = new MyHashImpl<>();
         //Calcula la cantidad de calificaciones de todas las peliculas, luego las diferencia por idioma original y se queda con las 5 con mayor
-        //calificacion de todos los idiomas (Ingles, frances, italiano, español y portugués)
+        //cantidad de calificaciones de todos los idiomas (Ingles, frances, italiano, español y portugués)
+        MyList<Pelicula> listaDePeliculas = getDatos().getTodasLasPeliculas().values();
+
+        for(int i = 0; i<listaDePeliculas.size(); i++){
+            switch (listaDePeliculas.get(i).getIdiomaOriginal()){
+                case "en", "es", "fr", "it":
+                    if(peliculasPorIdioma.contains(listaDePeliculas.get(i).getIdiomaOriginal())){
+                        peliculasPorIdioma.get(listaDePeliculas.get(i).getIdiomaOriginal()).add(listaDePeliculas.get(i));
+                    }else{
+                        MyList<Pelicula> pelisIngles = new MyLinkedListImpl<>();
+                        pelisIngles.add(listaDePeliculas.get(i));
+                        peliculasPorIdioma.put(listaDePeliculas.get(i).getIdiomaOriginal(), pelisIngles);
+                    }
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+
+
         return resultado;
     }
 
