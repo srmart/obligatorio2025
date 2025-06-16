@@ -17,8 +17,9 @@ public class Pelicula implements Comparable<Pelicula>{
     private Coleccion coleccion;
     private final MyList<Rating> ratings = new MyLinkedListImpl<>(); //todas las evaluaciones realizadas a una pelicula
     //private MyList<Actores> actores;
-    static Comparator<Pelicula> comparator;
-
+    public static Comparator<Pelicula> comparator;
+    public static final  Comparator<Pelicula> RATING_COMPARATOR = (Pelicula p1, Pelicula p2) -> Integer.compare(p2.cantEvaluacionesPelicula(p2.getId()), p1.cantEvaluacionesPelicula(p1.getId()));
+    public static final Comparator<Pelicula> AVG_COMPARATOR = (Pelicula p1, Pelicula p2) -> Double.compare(p2.ratingPromedio(),p1.ratingPromedio());
 
     public Pelicula(int id, String titulo, String idiomaOriginal, long presupuesto, long ingresos) {
         this.id = id;
@@ -52,13 +53,6 @@ public class Pelicula implements Comparable<Pelicula>{
             result += 1;
         }
         return result;
-    }
-
-    public static Comparator<Pelicula> porCantRating(){
-        return (Pelicula p1, Pelicula p2) -> Integer.compare(p2.cantEvaluacionesPelicula(p2.getId()), p1.cantEvaluacionesPelicula(p1.getId()));
-    }
-    public Comparator<Pelicula> avgRating() {
-        return (Pelicula p1, Pelicula p2) -> Double.compare(p2.ratingPromedio(),p1.ratingPromedio());
     }
 
     public String toStringFunc1(){

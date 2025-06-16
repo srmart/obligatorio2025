@@ -19,7 +19,7 @@ public class UMovieSist {
     }
 
     public void top5_peliculas_mas_calificadas_por_idioma_original(){
-        Pelicula.comparator = Pelicula.porCantRating(); //seteamos el comparable de pelicula para que compare por cantidad de evaluaciones.
+        Pelicula.comparator = Pelicula.RATING_COMPARATOR; //seteamos el comparable de pelicula para que compare por cantidad de evaluaciones.
         MyHash<String, MyHeap<Pelicula>> peliculasPorIdioma = new MyHashImpl<>(); //hash donde guardamos por idioma original un heap con las peliculas
         MyList<Pelicula> listaDePeliculas = getDatos().getTodasLasPeliculas().values(); //todas las peliculas
         for(int i = 0; i<listaDePeliculas.size(); i++){
