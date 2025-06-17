@@ -12,30 +12,38 @@ import uy.edu.um.tad.linkedlist.MyList;
 public class UMovieSist {
 
     private final CargaDeDatos datos;
+    private final MyHash<String, MyHeap<Pelicula>> peliculasPorIdioma = new MyHashImpl<>(); //hash donde guardamos por idioma original un heap con las peliculas(para funcion 1)
+    private final MyHeap<Pelicula> ordenarPeliculas = new MyHeapImpl<>(); //heap donde guardo las peliculas para ordenarlas
 
     public UMovieSist (CargaDeDatos datos){
 
         this.datos = datos;
+        peliculasPorIdioma.put("en", new MyHeapImpl<>());
+        peliculasPorIdioma.put("es", new MyHeapImpl<>());
+        peliculasPorIdioma.put("fr", new MyHeapImpl<>());
+        peliculasPorIdioma.put("it", new MyHeapImpl<>());
     }
 
     public void top5_peliculas_mas_calificadas_por_idioma_original(){
+        long inicio = System.currentTimeMillis();
         Pelicula.comparator = Pelicula.RATING_COMPARATOR; //seteamos el comparable de pelicula para que compare por cantidad de evaluaciones.
-        MyHash<String, MyHeap<Pelicula>> peliculasPorIdioma = new MyHashImpl<>(); //hash donde guardamos por idioma original un heap con las peliculas
+
+        // vacíar los heaps antes de reutilizarlos
+        for (String idioma : new String[]{"en", "es", "fr", "it"}){
+            MyHeap<Pelicula> heap = peliculasPorIdioma.get(idioma);
+            while (heap.size()!=0) {
+                heap.delete();  // vaciar
+            }
+        }
+
         MyList<Pelicula> listaDePeliculas = getDatos().getTodasLasPeliculas().values(); //todas las peliculas
         for(int i = 0; i<listaDePeliculas.size(); i++){
-            switch (listaDePeliculas.get(i).getIdiomaOriginal()){ //switch case sobre el idioma de la pelicula en cada iteraciòn
+            Pelicula p = listaDePeliculas.get(i);
+            String idioma = p.getIdiomaOriginal();
+            switch (idioma){ //switch case sobre el idioma de la pelicula en cada iteraciòn
                 case "en", "es", "fr", "it":
-                    if(peliculasPorIdioma.contains(listaDePeliculas.get(i).getIdiomaOriginal())){//existe el heap de peliculas en este idioma, agrego la pelicula.
-                        peliculasPorIdioma.get(listaDePeliculas.get(i).getIdiomaOriginal()).insert(listaDePeliculas.get(i));
-                    }else{ //no existe el heap, la creo y agrego la pelicula
-                        MyHeap<Pelicula> peliculas = new MyHeapImpl<>();
-                        peliculas.insert(listaDePeliculas.get(i));
-                        peliculasPorIdioma.put(listaDePeliculas.get(i).getIdiomaOriginal(), peliculas);
-                    }
-
-                    break;
-
-                default:
+                    peliculasPorIdioma.get(idioma).insert(p); //se agrega la pelicula a su respectivo heap para ordenarse
+                default: //el idioma de la pelicula no corresponde con ninguno del hash
                     break;
             }
         }
@@ -53,12 +61,35 @@ public class UMovieSist {
         for(int i=0; i<largo; i++){
             System.out.println(peliculasPorIdioma.get("it").delete().toStringFunc1());
         }
+        long fin = System.currentTimeMillis();
+        System.out.println("Tiempo de ejecución: "+(fin - inicio)+" ms");
     }
 
-    public MyList<String> top10_peliculas_con_mayor_calificacion(){
-        MyList<String> resultado = new MyLinkedListImpl<>();
+
+
+    public void top10_peliculas_con_mayor_calificacion(){
         //Ordena el top 10 de peliculas con mayor calificacion y lo devuelve
-        return resultado;
+        long inicio = System.currentTimeMillis();
+        Pelicula.comparator = Pelicula.AVG_COMPARATOR; //seteamos el comparable de pelicula para que compare por nota promedio de evaluaciones.
+        MyList<Pelicula> listaDePeliculas = getDatos().getTodasLasPeliculas().values(); //todas las peliculas
+        //limpiar el heap para ordenar
+        while (ordenarPeliculas.size()!=0) {
+            ordenarPeliculas.delete();
+        }
+
+        for(int i = 0; i<listaDePeliculas.size(); i++){
+            Pelicula p =listaDePeliculas.get(i);
+            if(p.getAvgRating()!=-1 && listaDePeliculas.get(i).getRatings().size()>=50) { //se filtran las peliculas cuya cantidad de evaluaciones es menor a 50 para que una pelicula con pocas evaluaciones no opaque otra pelicula muy evaluada
+                ordenarPeliculas.insert(p);
+            }
+        }
+        //IMPRIMIR PELICULAS
+        int largo = 10;  //set top 5
+        for(int i=0; i<largo; i++){
+            System.out.println(ordenarPeliculas.delete().toStringFunc2());
+        }
+        long fin = System.currentTimeMillis();
+        System.out.println("Tiempo de ejecución: "+(fin - inicio)+" ms");
     }
 
     public MyList<String> top5_colecciones_con_mayores_ingresos(){

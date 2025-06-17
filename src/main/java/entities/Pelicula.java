@@ -15,7 +15,9 @@ public class Pelicula implements Comparable<Pelicula>{
     private long presupuesto;
     private long ingresos;
     private Coleccion coleccion;
-    private final MyList<Rating> ratings = new MyLinkedListImpl<>(); //todas las evaluaciones realizadas a una pelicula
+    private final MyList<Rating> ratings = new MyLinkedListImpl<>();//todas las evaluaciones realizadas a una pelicula
+    private double avgRating;
+    private final MyList<String> generos = new MyLinkedListImpl<>();
     //private MyList<Actores> actores;
     public static Comparator<Pelicula> comparator;
     public static final  Comparator<Pelicula> RATING_COMPARATOR = (Pelicula p1, Pelicula p2) -> Integer.compare(p2.cantEvaluacionesPelicula(p2.getId()), p1.cantEvaluacionesPelicula(p1.getId()));
@@ -39,10 +41,15 @@ public class Pelicula implements Comparable<Pelicula>{
     public double ratingPromedio(){
         double rating = 0.0;
         //Va a recorrer la "lista" de ratings sumandolos, luego divide por el size de la lista.
+        if(this.getRatings().isEmpty()){
+            this.setAvgRating(-1); //no existen evaluaciones
+            return -1;
+        }
         for(int i = 0; i < this.getRatings().size() ; i++){
             rating += this.getRatings().get(i).getRating();
         }
         rating = rating / this.getRatings().size();
+        this.setAvgRating(rating); //cuando se calcule el rating promedio se agrega a la pelicula.
         return rating;
     }
 
@@ -58,7 +65,9 @@ public class Pelicula implements Comparable<Pelicula>{
     public String toStringFunc1(){
         return "ID: "+this.id +" TITULO: "+ this.titulo +" IDIOMA ORIGINAL: "+this.getIdiomaOriginal()+ " TOTAL DE EVALUACIONES: "+this.cantEvaluacionesPelicula(this.id);
     }
-
+    public String toStringFunc2(){
+        return "ID: "+this.id +" TITULO: "+ this.titulo +" PROMEDIO DE EVALUACIONES: "+this.getAvgRating();
+    }
 
 
     @Override

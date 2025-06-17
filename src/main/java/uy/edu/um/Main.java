@@ -12,7 +12,8 @@ import java.util.Scanner;
 public class Main extends CargaDeDatos {
     public static void main(String[] args) {
 
-        final CargaDeDatos cargaDeDatos = new CargaDeDatos();
+        CargaDeDatos cargaDeDatos = new CargaDeDatos();
+
 
         UMovieSist sistemaPrueba = new UMovieSist(cargaDeDatos);
 
@@ -65,14 +66,16 @@ public class Main extends CargaDeDatos {
                             continue;
                         }
 
+                        UMovieSist sistemaPrueb = new UMovieSist(cargaDeDatos);
                         switch (consulta){
                             case 1:
                                 // Consulta 1
-                                UMovieSist sistemaPrueb = new UMovieSist(cargaDeDatos);
+
                                 sistemaPrueb.top5_peliculas_mas_calificadas_por_idioma_original();
                                 break;
                             case 2:
                                 // Consulta 2
+                                sistemaPrueb.top10_peliculas_con_mayor_calificacion();
                                 break;
                             case 3:
                                 // Consulta 3
