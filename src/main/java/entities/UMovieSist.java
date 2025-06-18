@@ -92,11 +92,14 @@ public class UMovieSist {
         System.out.println("Tiempo de ejecución: "+(fin - inicio)+" ms");
     }
 
-    public MyList<String> top5_colecciones_con_mayores_ingresos(){
-        MyList<String> resultado = new MyLinkedListImpl<>();
+    public void top5_colecciones_con_mayores_ingresos(){
+        Coleccion.comparator = Coleccion.INCOME_COMPARATOR;
+        MyHeap<String> resultado = new MyHeapImpl<>();
+        MyList<Coleccion> colecciones = getDatos().getColecciones().values();
+
         //Los ingresos se calculan a nivel de pelicula, para calcular los ingresos totales de una colección se suman estos.
-        //
-        return resultado;
+
+
     }
 
 }

@@ -4,12 +4,16 @@ import lombok.Data;
 import uy.edu.um.tad.linkedlist.MyLinkedListImpl;
 import uy.edu.um.tad.linkedlist.MyList;
 
+import java.util.Comparator;
+
 @Data
-public class Coleccion {
+public class Coleccion implements Comparable<Coleccion> {
 
     private int id;
     private String nombre;
     private final MyList<Pelicula> peliculas = new MyLinkedListImpl<>();
+    static Comparator<Coleccion> comparator;
+    public static final Comparator<Coleccion> INCOME_COMPARATOR = (Coleccion c1, Coleccion c2) -> Double.compare(c2.calcIngresos(),c1.calcIngresos());
 
     public Coleccion(int id, String nombre){
         this.id = id;
@@ -25,4 +29,8 @@ public class Coleccion {
     }
 
 
+    @Override
+    public int compareTo(Coleccion c) {
+        return comparator.compare(this, c);
+    }
 }
