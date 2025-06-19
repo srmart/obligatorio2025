@@ -5,12 +5,13 @@ import entities.UMovieSist;
 import lombok.Data;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import uy.edu.um.tad.stack.EmptyStackException;
 
 import java.util.Scanner;
 
 @Data
 public class Main extends CargaDeDatos {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws EmptyStackException {
 
         CargaDeDatos cargaDeDatos = new CargaDeDatos();
 
@@ -79,6 +80,7 @@ public class Main extends CargaDeDatos {
                                 break;
                             case 3:
                                 // Consulta 3
+
                                 break;
                             case 4:
                                 // Consulta 4

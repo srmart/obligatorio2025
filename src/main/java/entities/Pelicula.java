@@ -20,8 +20,8 @@ public class Pelicula implements Comparable<Pelicula>{
     private final MyList<String> generos = new MyLinkedListImpl<>();
     //private MyList<Actores> actores;
     public static Comparator<Pelicula> comparator;
-    public static final  Comparator<Pelicula> RATING_COMPARATOR = (Pelicula p1, Pelicula p2) -> Integer.compare(p2.cantEvaluacionesPelicula(p2.getId()), p1.cantEvaluacionesPelicula(p1.getId()));
-    public static final Comparator<Pelicula> AVG_COMPARATOR = (Pelicula p1, Pelicula p2) -> Double.compare(p2.ratingPromedio(),p1.ratingPromedio());
+    public static final  Comparator<Pelicula> RATING_COMPARATOR = (Pelicula p1, Pelicula p2) -> Integer.compare(p1.cantEvaluacionesPelicula(), p2.cantEvaluacionesPelicula());
+    public static final Comparator<Pelicula> AVG_COMPARATOR = (Pelicula p1, Pelicula p2) -> Double.compare(p1.ratingPromedio(),p2.ratingPromedio());
 
     public Pelicula(int id, String titulo, String idiomaOriginal, long presupuesto, long ingresos) {
         this.id = id;
@@ -45,29 +45,32 @@ public class Pelicula implements Comparable<Pelicula>{
             this.setAvgRating(-1); //no existen evaluaciones
             return -1;
         }
-        for(int i = 0; i < this.getRatings().size() ; i++){
-            rating += this.getRatings().get(i).getRating();
+        else if(this.avgRating>0){
+            return this.getAvgRating();
+        }else {
+            int size = getRatings().size();
+            for (int i = 0; i < size; i++) {
+                rating += this.getRatings().get(i).getRating();
+            }
+
+            rating = rating / size;
+            this.setAvgRating(rating); //cuando se calcule el rating promedio se agrega a la pelicula.
+            return rating;
         }
-        rating = rating / this.getRatings().size();
-        this.setAvgRating(rating); //cuando se calcule el rating promedio se agrega a la pelicula.
-        return rating;
     }
 
-    public int cantEvaluacionesPelicula(int idPelicula){
-        int result = 0;
-        //Recorre la lista de ratings y para un mismo idPelicula suma 1 el resultado
-        for(int i = 0; i<getRatings().size(); i++){
-            result += 1;
-        }
-        return result;
+    public int cantEvaluacionesPelicula(){
+        return getRatings().size();
     }
 
     public String toStringFunc1(){
-        return "ID: "+this.id +" TITULO: "+ this.titulo +" IDIOMA ORIGINAL: "+this.getIdiomaOriginal()+ " TOTAL DE EVALUACIONES: "+this.cantEvaluacionesPelicula(this.id);
+        return "ID: "+this.id +" TITULO: "+ this.titulo +" IDIOMA ORIGINAL: "+this.getIdiomaOriginal()+ " TOTAL DE EVALUACIONES: "+this.cantEvaluacionesPelicula();
     }
     public String toStringFunc2(){
-        return "ID: "+this.id +" TITULO: "+ this.titulo +" PROMEDIO DE EVALUACIONES: "+this.getAvgRating();
+        double avgRating = (getAvgRating()==0) ? ratingPromedio() : getAvgRating();
+        return "ID: "+this.id +" TITULO: "+ this.titulo +" PROMEDIO DE EVALUACIONES: "+avgRating;
     }
+
 
 
     @Override

@@ -13,7 +13,8 @@ public class Coleccion implements Comparable<Coleccion> {
     private String nombre;
     private final MyList<Pelicula> peliculas = new MyLinkedListImpl<>();
     static Comparator<Coleccion> comparator;
-    public static final Comparator<Coleccion> INCOME_COMPARATOR = (Coleccion c1, Coleccion c2) -> Double.compare(c2.calcIngresos(),c1.calcIngresos());
+    public static final Comparator<Coleccion> INCOME_COMPARATOR = (Coleccion c1, Coleccion c2) -> Long.compare(c1.calcIngresos(),c2.calcIngresos());
+    private long income;
 
     public Coleccion(int id, String nombre){
         this.id = id;
@@ -25,6 +26,7 @@ public class Coleccion implements Comparable<Coleccion> {
         for(int i = 0; i< peliculas.size(); i++){
             ingresos += peliculas.get(i).gananciasGeneradas();
         }
+        setIncome(ingresos);
         return ingresos;
     }
 
