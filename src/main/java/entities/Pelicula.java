@@ -7,7 +7,7 @@ import uy.edu.um.tad.linkedlist.MyList;
 import java.util.Comparator;
 
 @Data
-public class Pelicula implements Comparable<Pelicula>{
+public class Pelicula implements Comparable<Pelicula> {
 
     private int id;
     private String titulo;
@@ -38,26 +38,26 @@ public class Pelicula implements Comparable<Pelicula>{
         return ganancias;
     }
 
-    public double ratingPromedio(){
+    public double ratingPromedio() {
         double rating = 0.0;
-        //Va a recorrer la "lista" de ratings sumandolos, luego divide por el size de la lista.
-        if(this.getRatings().isEmpty()){
-            this.setAvgRating(-1); //no existen evaluaciones
+
+        if (this.getRatings().isEmpty()) {
+            this.setAvgRating(-1); // no existen evaluaciones
             return -1;
-        }
-        else if(this.avgRating>0){
-            return this.getAvgRating();
-        }else {
+        } else if (this.avgRating > 0) {
+            return this.getAvgRating(); // ya fue calculado previamente
+        } else {
             int size = getRatings().size();
             for (int i = 0; i < size; i++) {
                 rating += this.getRatings().get(i).getRating();
             }
 
             rating = rating / size;
-            this.setAvgRating(rating); //cuando se calcule el rating promedio se agrega a la pelicula.
+            this.setAvgRating(rating); // guarda el valor para futuras llamadas
             return rating;
         }
     }
+
 
     public int cantEvaluacionesPelicula(){
         return getRatings().size();

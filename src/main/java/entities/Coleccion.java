@@ -13,7 +13,7 @@ public class Coleccion implements Comparable<Coleccion> {
     private String nombre;
     private final MyList<Pelicula> peliculas = new MyLinkedListImpl<>();
     static Comparator<Coleccion> comparator;
-    public static final Comparator<Coleccion> INCOME_COMPARATOR = (Coleccion c1, Coleccion c2) -> Long.compare(c1.calcIngresos(),c2.calcIngresos());
+    public static final Comparator<Coleccion> INCOME_COMPARATOR = Comparator.comparingLong(Coleccion::getIncome);
     private long income;
 
     public Coleccion(int id, String nombre){
@@ -34,5 +34,17 @@ public class Coleccion implements Comparable<Coleccion> {
     @Override
     public int compareTo(Coleccion c) {
         return comparator.compare(this, c);
+    }
+
+    public String printPeliculas(){
+        StringBuilder p = new StringBuilder();
+        for(int i = 0; i< peliculas.size(); i++){
+            p.append(peliculas.get(i).getTitulo()).append(", ");
+        }
+        return p.toString();
+    }
+
+    public String toStringC(){
+        return "| ID: "+this.id +" | NOMBRE: "+ this.nombre +" | CANTIDAD DE PELICULAS: "+this.peliculas.size()+ " | PELICULAS: "+this.printPeliculas()+" | INGRESOS GENERADOS: "+this.income+" |";
     }
 }

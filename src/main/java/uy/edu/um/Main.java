@@ -80,7 +80,7 @@ public class Main extends CargaDeDatos {
                                 break;
                             case 3:
                                 // Consulta 3
-
+                                sistemaPrueb.top5_colecciones_con_mayores_ingresos();
                                 break;
                             case 4:
                                 // Consulta 4

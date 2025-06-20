@@ -100,7 +100,7 @@ public class UMovieSist {
         for (int i = 0; i < listaDePeliculas.size(); i++) {
             Pelicula p = listaDePeliculas.get(i);
             int cantidadEvaluaciones = p.cantEvaluacionesPelicula();
-            if (cantidadEvaluaciones >= 100) {
+            if (cantidadEvaluaciones >= 1000) {
                 double avg = p.getAvgRating();
                 if (avg !=-1 &&ordenarPeliculas.size() < 10) {
                     ordenarPeliculas.insert(p);
@@ -125,7 +125,8 @@ public class UMovieSist {
         System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms");
     }
 
-    public void top5_colecciones_con_mayores_ingresos () {
+    public void top5_colecciones_con_mayores_ingresos () throws EmptyStackException {
+        long inicio = System.currentTimeMillis();
         Coleccion.comparator = Coleccion.INCOME_COMPARATOR;
         MyHeap<Coleccion> heapColecciones = new MyHeapImpl<>();
         MyHash<Integer ,Coleccion> hashColecciones = getDatos().getColecciones();
@@ -154,6 +155,18 @@ public class UMovieSist {
 
             }
         }
+        //imprimir colecciones
+
+        int tamanio = heapColecciones.size();
+        MyStack<Coleccion> stackColecciones = new MyLinkedListImpl<>();
+        for(int i = 0; i<tamanio; i++){
+            stackColecciones.push(heapColecciones.delete());
+        }
+        for(int i = 0; i<tamanio; i++){
+            System.out.println(stackColecciones.pop().toStringC());
+        }
+        long fin = System.currentTimeMillis();
+        System.out.println("Tiempo de ejecución: " + (fin - inicio) + " ms");
 
 
         //Los ingresos se calculan a nivel de pelicula, para calcular los ingresos totales de una colección se suman estos.

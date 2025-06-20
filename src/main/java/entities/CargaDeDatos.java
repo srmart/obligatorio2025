@@ -69,7 +69,7 @@ public class CargaDeDatos {
                                         String originalLang = peliculas[7];
 
                                         Pelicula unaPelicula = null;
-                                        if(todasLasPeliculas.contains(idPelicula)){
+                                        if(todasLasPeliculas.contains(idPelicula)) { //evaluamos duplicados
                                                 unaPelicula = todasLasPeliculas.get(idPelicula);
                                         }
                                         else {
