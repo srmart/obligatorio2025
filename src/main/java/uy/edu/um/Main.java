@@ -71,7 +71,6 @@ public class Main extends CargaDeDatos {
                         switch (consulta){
                             case 1:
                                 // Consulta 1
-
                                 sistemaPrueb.top5_peliculas_mas_calificadas_por_idioma_original();
                                 break;
                             case 2:

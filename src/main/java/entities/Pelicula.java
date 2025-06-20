@@ -1,6 +1,8 @@
 package entities;
 
 import lombok.Data;
+import uy.edu.um.tad.hash.MyHash;
+import uy.edu.um.tad.hash.MyHashImpl;
 import uy.edu.um.tad.linkedlist.MyLinkedListImpl;
 import uy.edu.um.tad.linkedlist.MyList;
 
@@ -17,7 +19,7 @@ public class Pelicula implements Comparable<Pelicula> {
     private Coleccion coleccion;
     private final MyList<Rating> ratings = new MyLinkedListImpl<>();//todas las evaluaciones realizadas a una pelicula
     private double avgRating;
-    private final MyList<String> generos = new MyLinkedListImpl<>();
+    private final MyHash<Integer, Genero> generos = new MyHashImpl<>(); //generos por id
     //private MyList<Actores> actores;
     public static Comparator<Pelicula> comparator;
     public static final  Comparator<Pelicula> RATING_COMPARATOR = (Pelicula p1, Pelicula p2) -> Integer.compare(p1.cantEvaluacionesPelicula(), p2.cantEvaluacionesPelicula());

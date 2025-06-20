@@ -28,6 +28,7 @@ public class CargaDeDatos {
         private int peliculasCargadas = 0;
         private int ratingsCargados = 0;
         private int cantidadDeColecciones = 0;
+        private int cantGeneros = 0;
 
 
         public void cargaDatos() {
@@ -106,6 +107,32 @@ public class CargaDeDatos {
                                                 }
                                         }
                                         //fin coleccion
+
+                                        //carga generos
+                                        if(peliculas[3].isEmpty() || peliculas[3].equals("null") || peliculas[3].equals("None")){
+                                                System.out.println("La pelicula con id: "+idPelicula+" no tiene generos cargados.");
+                                                continue;
+                                        }
+                                        String campoGeneros = peliculas[3].replace("'", "\"");
+                                        campoGeneros = campoGeneros.replace("\"[", "[");
+                                        campoGeneros = campoGeneros.replace("]\"", "]");
+                                        campoGeneros = campoGeneros.replace("\\\"", "\"");
+                                        JSONArray jsonGeneros = new JSONArray(campoGeneros);
+                                        for(int i = 0; i<jsonGeneros.length(); i++) {
+                                                JSONObject esteObjeto = jsonGeneros.getJSONObject(i);
+                                                int idGen = esteObjeto.getInt("id");
+                                                String nombreGen = esteObjeto.getString("name");
+                                                Genero genero = new Genero(idGen, nombreGen);
+                                                MyHash<Integer, Genero> generosPelicula = todasLasPeliculas.get(idPelicula).getGeneros();
+                                                if (generosPelicula.contains(idGen)) {
+                                                        continue;
+                                                } else {
+                                                        generosPelicula.put(idGen, genero);
+                                                        cantGeneros++;
+                                                }
+
+                                        }
+
                                 }catch (NumberFormatException e){
                                         System.out.println("Error de parseo con pelicula: "+peliculas[5]);
                                         erroresDeParseoPelis ++;
@@ -160,6 +187,14 @@ public class CargaDeDatos {
                                         }
                                         if(todasLasPeliculas.contains(idPelicula)){ //agregar la calificación a la pelicula con el mismo id que el id calificacion
                                                 todasLasPeliculas.get(idPelicula).getRatings().add(unRating); //saco la lista de ratings de la pelicula y agrego el rating.
+                                                MyList<Genero> generos = todasLasPeliculas.get(idPelicula).getGeneros().values();
+                                                int tamanio = generos.size();
+                                                for(int i = 0; i<tamanio; i++){
+                                                        Genero esteGen = generos.get(i);
+                                                        int cant = esteGen.getCantidadRatings();
+                                                        cant++;
+                                                        esteGen.setCantidadRatings(cant);
+                                                }
                                         }
 
                                 }catch (NumberFormatException e){
@@ -174,8 +209,9 @@ public class CargaDeDatos {
                         System.out.println("Cantidad de peliculas cargadas: "+getPeliculasCargadas());
                         System.out.println("Cantidad de colecciones guardadas: "+getCantidadDeColecciones());
                         System.out.println("Cantidad de ratings cargados: "+getRatingsCargados());
-//
+                        System.out.println("Cantidad de generos: "+getCantGeneros());
                         System.out.println("Tiempo de carga: "+(fin - comienzo)+" ms");
+
 
 
 
