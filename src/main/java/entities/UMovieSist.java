@@ -29,15 +29,13 @@ public class UMovieSist {
         long inicio = System.currentTimeMillis();
 
         Pelicula.comparator = Pelicula.RATING_COMPARATOR; // comparar por cantidad de evaluaciones
-        //long inicioSetup = System.currentTimeMillis();
+
         MyHash<String, MyHeap<Pelicula>> peliculasPorIdioma = new MyHashImpl<>();
         peliculasPorIdioma.put("en", new MyHeapImpl<>());
         peliculasPorIdioma.put("es", new MyHeapImpl<>());
         peliculasPorIdioma.put("fr", new MyHeapImpl<>());
         peliculasPorIdioma.put("it", new MyHeapImpl<>());
-        //long finSetup = System.currentTimeMillis();
 
-        //long inicioCarga = System.currentTimeMillis();
         MyList<Pelicula> listaDePeliculas = getDatos().getTodasLasPeliculas().values();
         for (int i = 0; i < listaDePeliculas.size(); i++) {
             Pelicula p = listaDePeliculas.get(i);
@@ -57,9 +55,7 @@ public class UMovieSist {
                 }
             }
         }
-        //long finCarga = System.currentTimeMillis();
 
-        //long inicioPrint = System.currentTimeMillis();
         int largo = 5;
         String[] idiomas = {"en", "es", "fr", "it"};
 
@@ -77,15 +73,7 @@ public class UMovieSist {
                 System.out.println(stackPeliculas.pop().toStringFunc1());
             }
         }
-
-        //long finPrint = System.currentTimeMillis();
-
         long fin = System.currentTimeMillis();
-
-        System.out.println("\n--- Tiempo de ejecución ---");
-//            System.out.println("Inicialización de estructuras: " + (finSetup - inicioSetup) + " ms");
-//            System.out.println("Carga y filtrado de películas: " + (finCarga - inicioCarga) + " ms");
-//            System.out.println("Extracción e impresión: " + (finPrint - inicioPrint) + " ms");
         System.out.println("Tiempo de ejecución: "+(fin-inicio)+" ms"+"\n\n");
     }
 
@@ -156,7 +144,6 @@ public class UMovieSist {
             }
         }
         //imprimir colecciones
-
         int tamanio = heapColecciones.size();
         MyStack<Coleccion> stackColecciones = new MyLinkedListImpl<>();
         for(int i = 0; i<tamanio; i++){
@@ -167,7 +154,6 @@ public class UMovieSist {
         }
         long fin = System.currentTimeMillis();
         System.out.println("Tiempo de ejecución: "+(fin-inicio)+" ms"+"\n\n");
-        //Los ingresos se calculan a nivel de pelicula, para calcular los ingresos totales de una colección se suman estos.
         }
 
         public void top_10_directores_mas_calificaciones() throws EmptyStackException {
@@ -224,7 +210,7 @@ public class UMovieSist {
             MyHash<Integer, MyHash<String, Integer>> calificacionesPorActorPorMes = new MyHashImpl<>(12); // hash por mes donde cada mes contiene un hash con las calificaciones por actor de ese mes
             MyList<Pelicula> peliculas = getDatos().getTodasLasPeliculas().values();
 
-            // Recorremos todas las películas y todos sus ratings
+            // recorremos todas las películas y todos sus ratings
             for (int i = 0; i < peliculas.size(); i++) {
                 Pelicula pelicula = peliculas.get(i);
                 MyList<Rating> ratings = pelicula.getRatings();
@@ -258,7 +244,6 @@ public class UMovieSist {
                             calificacionesPorActor.put(nombreActor, calificacionesPorActor.get(nombreActor) + 1);
                         }
 
-
                         if (!peliculasPorActor.contains(nombreActor)) { // actualizar películas únicas
                             MyList<Integer> listaPeliculas = new MyLinkedListImpl<>();
                             listaPeliculas.add(pelicula.getId());
@@ -280,8 +265,7 @@ public class UMovieSist {
                 }
             }
 
-            String[] nombresMeses = {
-                    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+            String[] nombresMeses = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
                     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
             };
 
@@ -307,17 +291,12 @@ public class UMovieSist {
                         }
                     }
                     if (actorTop != null) {
-                        System.out.println("Mes: " + nombresMeses[mes]
-                                + " | Actor: " + actorTop
-                                + " | Películas: " + maxPeliculas
-                                + " | Calificaciones: " + maxCalificaciones);
+                        System.out.println("Mes: " + nombresMeses[mes] + " | Actor: " + actorTop + " | Películas: " + maxPeliculas + " | Calificaciones: " + maxCalificaciones);
                     } else {
-                        System.out.println("Mes: " + nombresMeses[mes]
-                                + " | Sin datos para este mes.");
+                        System.out.println("Mes: " + nombresMeses[mes] + " | Sin datos para este mes.");
                     }
                 } else {
-                    System.out.println("Mes: " + nombresMeses[mes]
-                            + " | Sin datos para este mes.");
+                    System.out.println("Mes: " + nombresMeses[mes] + " | Sin datos para este mes.");
                 }
             }
 
@@ -326,8 +305,9 @@ public class UMovieSist {
         }
 
 
-    public void topUsuarioPorGeneroEnTop10() {
 
+    public void topUsuarioPorGeneroEnTop10() throws EmptyStackException {
+        long inicio = System.currentTimeMillis();
         MyHash<Integer, Integer> cantidadPorGenero = new MyHashImpl<>();//hash para guardar cantidad de ratings por generos
         MyHash<Integer, Genero> generosPorId = new MyHashImpl<>();//hash para obtener genero a partir de id
 
@@ -359,8 +339,75 @@ public class UMovieSist {
             }
         }
 
-    }
+        // heap top 10 generos mas evaluados
+        MyHeap<Genero> heapTop10 = new MyHeapImpl<>();
+        for (int i = 0; i < ids.size(); i++) {//se recorren los ids de generos
+            int idGen = ids.get(i);
+            Genero genero = generosPorId.get(idGen);
 
+            if (heapTop10.size() < 10) {//si el tamaño del heap es menor a 10 inserto generos.
+                heapTop10.insert(genero);
+            } else {                        //sino comparo el genero actual con el minimo del heap, si es mayor lo retiro e inserto el nuevo.
+                Genero menor = heapTop10.get();
+                if (genero.getCantidadRatings() > menor.getCantidadRatings()) {
+                    heapTop10.delete();
+                    heapTop10.insert(genero);
+                }
+            }
+        }
+
+        // push generos al stack para que queden de mayor a menor
+        MyStack<Genero> stackGeneros = new MyLinkedListImpl<>();
+        while (heapTop10.size() != 0) {
+            stackGeneros.push(heapTop10.delete());
+        }
+
+        // para cada genero buscar el usuario con mas calificaciones al genero
+        while (!stackGeneros.isEmpty()) {
+            Genero genero = stackGeneros.pop();
+            int idGen = genero.getId();
+            String nombreGen = genero.getNombre();
+
+
+            MyHash<Integer, Integer> cantidadPorUsuario = new MyHashImpl<>(); // hash para contar evaluaciones de cada usuario para ese género
+
+            // Recorremos todas las películas de ese género
+            for (int i = 0; i < peliculas.size(); i++) {
+                Pelicula peli = peliculas.get(i);
+                if (peli.getGeneros().contains(idGen)) {
+                    MyList<Rating> ratings = peli.getRatings();
+                    for (int j = 0; j < ratings.size(); j++) {
+                        Rating rating = ratings.get(j);
+                        int idUser = rating.getIdUsuario();
+                        int suma = cantidadPorUsuario.contains(idUser) ? cantidadPorUsuario.get(idUser) : 0; //si el hash ya tiene el usuario para ese genero le suma 1 a la cantidad, sino lo agrega con cant=1
+                        cantidadPorUsuario.put(idUser, suma + 1);
+                    }
+                }
+            }
+
+            // busco usuario con más evaluaciones para este genero
+            int usuarioTop = -1;
+            int maxRating = 0;
+            MyList<Integer> usuarios = cantidadPorUsuario.keys();
+            for (int i = 0; i < usuarios.size(); i++) {
+                int idUser = usuarios.get(i);
+                int rating = cantidadPorUsuario.get(idUser);
+                if (rating > maxRating) {
+                    maxRating = rating;
+                    usuarioTop = idUser;
+                }
+            }
+            // imprimir generos , usuario que mas evaluó y cant de evaluaciones del usuario
+            if (usuarioTop != -1) {
+                System.out.println("Género: " + nombreGen + " | Usuario: " + usuarioTop + " | Evaluaciones: " + maxRating);
+            } else {
+                System.out.println("Género: " + nombreGen + " | Sin evaluaciones.");
+            }
+
+        }
+        long fin = System.currentTimeMillis();
+        System.out.println("Tiempo de ejecución: "+(fin-inicio)+" ms");
+    }
 
 }
 

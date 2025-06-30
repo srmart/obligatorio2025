@@ -10,10 +10,7 @@ import java.util.Scanner;
 public class Main extends CargaDeDatos {
     public static void main(String[] args) throws EmptyStackException {
 
-        CargaDeDatos cargaDeDatos = new CargaDeDatos();
-
-
-        UMovieSist sistemaPrueba = new UMovieSist(cargaDeDatos);
+        CargaDeDatos datos = new CargaDeDatos();
 
         Scanner leer = new Scanner(System.in);
         int opcion=0;
@@ -40,7 +37,7 @@ public class Main extends CargaDeDatos {
                 case 1:
                     //Carga de Datos
                     System.out.println("||----------------Inicia la carga de datos----------------||");
-                    cargaDeDatos.cargaDatos();
+                    datos.cargaDatos();
                     break;
                 case 2:
                     int consulta=0;
@@ -65,36 +62,37 @@ public class Main extends CargaDeDatos {
                             continue;
                         }
 
-                        UMovieSist sistemaPrueb = new UMovieSist(cargaDeDatos);
+                        UMovieSist sistemaUMovie = new UMovieSist(datos);
                         switch (consulta){
                             case 1:
                                 // Consulta 1
                                 System.out.println("Ejecutando la consulta...");
-                                sistemaPrueb.top5_peliculas_mas_calificadas_por_idioma_original();
+                                sistemaUMovie.top5_peliculas_mas_calificadas_por_idioma_original();
                                 break;
                             case 2:
                                 // Consulta 2
                                 System.out.println("Ejecutando la consulta...");
-                                sistemaPrueb.top10_peliculas_con_mayor_calificacion();
+                                sistemaUMovie.top10_peliculas_con_mayor_calificacion();
                                 break;
                             case 3:
                                 // Consulta 3
                                 System.out.println("Ejecutando la consulta...");
-                                sistemaPrueb.top5_colecciones_con_mayores_ingresos();
+                                sistemaUMovie.top5_colecciones_con_mayores_ingresos();
                                 break;
                             case 4:
                                 // Consulta 4
                                 System.out.println("Ejecutando la consulta...");
-                                sistemaPrueb.   top_10_directores_mas_calificaciones();
+                                sistemaUMovie.top_10_directores_mas_calificaciones();
                                 break;
                             case 5:
                                 // Consulta 5
                                 System.out.println("Ejecutando la consulta...");
-                                sistemaPrueb.mejor_actor_por_cada_mes();
+                                sistemaUMovie.mejor_actor_por_cada_mes();
                                 break;
                             case 6:
                                 // Consulta 6
                                 System.out.println("Ejecutando la consulta...");
+                                sistemaUMovie.topUsuarioPorGeneroEnTop10();
                                 break;
                             case 7:
                                 System.out.println("Volviendo al menú principal...");
