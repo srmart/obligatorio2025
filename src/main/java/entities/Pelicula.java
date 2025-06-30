@@ -20,7 +20,8 @@ public class Pelicula implements Comparable<Pelicula> {
     private final MyList<Rating> ratings = new MyLinkedListImpl<>();//todas las evaluaciones realizadas a una pelicula
     private double avgRating;
     private final MyHash<Integer, Genero> generos = new MyHashImpl<>(); //generos por id
-    //private MyList<Actores> actores;
+    private final MyList<Actor> actores = new MyLinkedListImpl<>();
+    private Director director;
     public static Comparator<Pelicula> comparator;
     public static final  Comparator<Pelicula> RATING_COMPARATOR = (Pelicula p1, Pelicula p2) -> Integer.compare(p1.cantEvaluacionesPelicula(), p2.cantEvaluacionesPelicula());
     public static final Comparator<Pelicula> AVG_COMPARATOR = (Pelicula p1, Pelicula p2) -> Double.compare(p1.ratingPromedio(),p2.ratingPromedio());
@@ -44,7 +45,7 @@ public class Pelicula implements Comparable<Pelicula> {
         double rating = 0.0;
 
         if (this.getRatings().isEmpty()) {
-            this.setAvgRating(-1); // no existen evaluaciones
+            // no existen evaluaciones
             return -1;
         } else if (this.avgRating > 0) {
             return this.getAvgRating(); // ya fue calculado previamente
@@ -69,8 +70,8 @@ public class Pelicula implements Comparable<Pelicula> {
         return "ID: "+this.id +" TITULO: "+ this.titulo +" IDIOMA ORIGINAL: "+this.getIdiomaOriginal()+ " TOTAL DE EVALUACIONES: "+this.cantEvaluacionesPelicula();
     }
     public String toStringFunc2(){
-        double avgRating = (getAvgRating()==0) ? ratingPromedio() : getAvgRating();
-        return "ID: "+this.id +" TITULO: "+ this.titulo +" PROMEDIO DE EVALUACIONES: "+avgRating;
+        return "ID: "+this.id +" TITULO: "+ this.titulo +" PROMEDIO DE EVALUACIONES: "+getAvgRating();
+
     }
 
 

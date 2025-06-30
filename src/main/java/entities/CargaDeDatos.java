@@ -17,7 +17,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Scanner;
 @Data
 
@@ -32,6 +31,7 @@ public class CargaDeDatos {
         private int peliculasCargadas = 0;
         private int ratingsCargados = 0;
         private int cantidadDeColecciones = 0;
+        private int CantidadCreditos = 0;
         private int cantGeneros = 0;
         int linea = 0;
         int actorCargado = 0;
@@ -247,6 +247,8 @@ public class CargaDeDatos {
                                 if(todasLasPeliculas.contains(idPeliculaCreditos)){
                                         boolean tieneDirector = false;
                                         Pelicula estaPelicula = todasLasPeliculas.get(idPeliculaCreditos);
+                                        estaPelicula.ratingPromedio();
+                                        Pelicula.comparator = Pelicula.AVG_COMPARATOR;
                                         MyList<Actor> actoresPelicula = estaPelicula.getActores();
                                         if(actoresPelicula.isEmpty()){
                                                 //Reemplazar caracteres para obtener json valido
@@ -288,40 +290,27 @@ public class CargaDeDatos {
                                                         JSONArray crewArray = new JSONArray(stringCrew);
                                                         //Check si el director está en el primer lugar
                                                         Director directorEncontrado = null;
-                                                        if (crewArray.getJSONObject(0).get("job") == "Director") {
-                                                                if(!directores.contains(crewArray.getJSONObject(0).getString("name"))){
-                                                                        directorEncontrado = new Director(crewArray.getJSONObject(0).getInt("id"), crewArray.getJSONObject(0).getString("name"));
-                                                                        directores.put(directorEncontrado.getNombre(), directorEncontrado);
-                                                                        break;
-                                                                }
-                                                                else{
-                                                                        directorEncontrado = directores.get(crewArray.getJSONObject(0).getString("name"));
-                                                                }
-                                                        }
-                                                        else{
-                                                                for(int i = 0; i<crewArray.length(); i++){
-                                                                        JSONObject director = crewArray.getJSONObject(i);
-                                                                        if (director.get("job") == "Director" || director.get("job").equals("Director")){
-                                                                                if(!directores.contains(director.getString("name"))){
-                                                                                        directorEncontrado = new Director(director.getInt("id"), director.getString("name"));
-                                                                                        directores.put(directorEncontrado.getNombre(), directorEncontrado);
-                                                                                        break;
-                                                                                }
-                                                                                else{directorEncontrado=directores.get(director.getString("name"));}
-
+                                                        for(int i = 0; i<crewArray.length(); i++){
+                                                                JSONObject director = crewArray.getJSONObject(i);
+                                                                if (director.get("job") == "Director" || director.get("job").equals("Director")){
+                                                                        if(!directores.contains(director.getString("name"))){
+                                                                                directorEncontrado = new Director(director.getInt("id"), director.getString("name"));
+                                                                                directores.put(directorEncontrado.getNombre(), directorEncontrado);
                                                                         }
+                                                                        else{directorEncontrado=directores.get(director.getString("name"));}
                                                                 }
                                                         }
                                                         if(directorEncontrado!=null){
-                                                                MyList<Pelicula> peliculasDirigidas = directorEncontrado.getPeliculasDirigidas();
-                                                                if(!peliculasDirigidas.contains(estaPelicula)){
-                                                                        peliculasDirigidas.add(estaPelicula);
+                                                                MySearchBinaryTreeImpl<Double, Pelicula> peliculasDirigidas = directorEncontrado.getPeliculasPorCalificacion();
+                                                                if(!peliculasDirigidas.contains(estaPelicula.getAvgRating())){
+                                                                        directorEncontrado.agregarPelicula(estaPelicula);
                                                                         int cantPeliculas = directorEncontrado.getCantidadDePeliculas() + 1;
                                                                         directorEncontrado.setCantidadDePeliculas(cantPeliculas);
+                                                                        int cant = getCantidadCreditos();
+                                                                        cant++;
+                                                                        setCantidadCreditos(cant);
                                                                 }
                                                         }
-
-
                                                 }
                                         } catch (JSONException e) {
                                                 //System.out.println("error parseo de director en linea: "+linea);
@@ -330,35 +319,31 @@ public class CargaDeDatos {
                                         }
 
                                 }
-                                else{System.out.println("Pelicula no existe");}
+                                //else{System.out.println("Pelicula no existe");}
 
                         }
 
 
                         //----------------FIN CARGA DE CREDITOS----------------//
+
+                        //----------------TESTS----------------//
+
                         long fin = System.currentTimeMillis();
-                        System.out.println("Errores de parseo en carga de peliculas: "+getErroresDeParseoPelis());
-                        System.out.println("Errores de parseo en carga de ratings: "+getErroresDeParseoRatings());
+                        //System.out.println("Errores de parseo en carga de peliculas: "+getErroresDeParseoPelis());
+                        //System.out.println("Errores de parseo en carga de ratings: "+getErroresDeParseoRatings());
                         System.out.println("Cantidad de peliculas cargadas: "+getPeliculasCargadas());
                         System.out.println("Cantidad de colecciones guardadas: "+getCantidadDeColecciones());
                         System.out.println("Cantidad de ratings cargados: "+getRatingsCargados());
-                        System.out.println("Cantidad de generos: "+getCantGeneros());
-                        System.out.println(actorCargado);
-                        System.out.println(errorActores);
-                        System.out.println(errorListaActores);
-                        System.out.println(errorDirectores);
+                        System.out.println("Cantidad de créditos cargados: "+getCantidadCreditos());
+                        //System.out.println("Cantidad de generos: "+getCantGeneros());
+//                        System.out.println(actorCargado);
+//                        System.out.println(errorActores);
+//                        System.out.println(errorListaActores);
+//                        System.out.println(errorDirectores);
                         System.out.println("Tiempo de carga: "+(fin - comienzo)+" ms");
                         Pelicula.comparator = Pelicula.AVG_COMPARATOR;
                         MyList<Director> directoresLista = directores.values();
-                        for(int i = 0; i<directoresLista.size();i++){
-                                MyList<Pelicula> pDirector = directoresLista.get(i).getPeliculasDirigidas();
-                                for(int j = 0; j<pDirector.size();j++){
-                                        if (pDirector.get(j).getAvgRating()!=(-1)){
-                                                System.out.println(pDirector.get(j).toStringFunc2());
-                                        }
 
-                                }
-                        }
 
 
 
