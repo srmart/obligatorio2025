@@ -88,7 +88,7 @@ public class UMovieSist {
         for (int i = 0; i < listaDePeliculas.size(); i++) {
             Pelicula p = listaDePeliculas.get(i);
             int cantidadEvaluaciones = p.cantEvaluacionesPelicula();
-            if (cantidadEvaluaciones >= 1000) {
+            if (cantidadEvaluaciones >= 100) {
                 double avg = p.getAvgRating();
                 if (avg !=-1 &&ordenarPeliculas.size() < 10) {
                     ordenarPeliculas.insert(p);
@@ -164,15 +164,7 @@ public class UMovieSist {
                 directors.get(i).mediana();
             }
             Director.comparator = Director.MEDIANA;//comparator de director para comparar por mediana
-
-
-
             MyList<Director> listaDirectores = getDatos().getDirectores().values();
-
-            for (int i = 0; i < listaDirectores.size(); i++) {
-                Director d = listaDirectores.get(i);
-                System.out.println(d.getNombre() + " -> Películas: " + d.getCantidadDePeliculas() + " -> Mediana: " + d.getMediana());
-            }
 
             MyHeap<Director> directoresPorMediana = new MyHeapImpl<>();
             for(int i = 0; i<listaDirectores.size(); i++){
