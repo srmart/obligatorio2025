@@ -3,9 +3,13 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.Data;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import uy.edu.um.tad.binarytree.MySearchBinaryTreeImpl;
 import uy.edu.um.tad.hash.MyHash;
 import uy.edu.um.tad.hash.MyHashImpl;
+import uy.edu.um.tad.heap.MyHeap;
+import uy.edu.um.tad.heap.MyHeapImpl;
 import uy.edu.um.tad.linkedlist.MyLinkedListImpl;
 import uy.edu.um.tad.linkedlist.MyList;
 
@@ -13,7 +17,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Scanner;
 @Data
 
@@ -21,14 +24,20 @@ public class CargaDeDatos {
         private MyHash<Integer, Pelicula> todasLasPeliculas = new MyHashImpl<>(65536); //peliculas por id pelicula
         private MyHash<Integer, MyList<Rating>> ratingsPorUsuario = new MyHashImpl<>(65536); //todas las evaluaciones realizadas por usuario.
         private MyHash<Integer, Coleccion> colecciones = new MyHashImpl<>(65536); //colecciones por su id
-        //private MyHash<String, MyList<Pelicula>> peliculasPorDirector;  //peliculas por nombre director
+        private MyHash<String, Director> directores = new MyHashImpl<>(40000);
         private int erroresDeParseoPelis = 0;
         private int erroresDeParseoRatings = 0;
         private int lineasIncorrectas = 0;
         private int peliculasCargadas = 0;
         private int ratingsCargados = 0;
         private int cantidadDeColecciones = 0;
+        private int CantidadCreditos = 0;
         private int cantGeneros = 0;
+        int linea = 0;
+        int actorCargado = 0;
+        int errorActores = 0;
+        int errorListaActores = 0;
+        int errorDirectores = 0;
 
 
         public void cargaDatos() {
@@ -86,9 +95,9 @@ public class CargaDeDatos {
                                                 cantidadDeColecciones++;
                                         }else {
                                                 String campoColeccion = peliculas[1];
-                                                //campoColeccion = campoColeccion.replace('\'', '"');// remplazar '' por "" para que sea un json válido.
-                                                campoColeccion = campoColeccion.replaceAll("(?<=\\{|, )'(\\w+)':", "\"$1\":");  // claves
-                                                campoColeccion = campoColeccion.replaceAll(":\\s*'(.*?)'(?=[,}])", ": \"$1\""); // valores
+
+                                                campoColeccion = campoColeccion.replaceAll("(?<=\\{|, )'(\\w+)':", "\"$1\":");  // reemplazar comillas simples por dobles en claves
+                                                campoColeccion = campoColeccion.replaceAll(":\\s*'(.*?)'(?=[,}])", ": \"$1\""); // reemplazar comillas simples por dobles en valores
                                                 campoColeccion = campoColeccion.replace("None", "null");// remplazar None por null para evitar errores.
                                                 //System.out.println("JSON a parsear: " + campoColeccion);
                                                 JSONObject jsonColeccion = new JSONObject(campoColeccion);
@@ -113,10 +122,10 @@ public class CargaDeDatos {
                                                 System.out.println("La pelicula con id: "+idPelicula+" no tiene generos cargados.");
                                                 continue;
                                         }
-                                        String campoGeneros = peliculas[3].replace("'", "\"");
-                                        campoGeneros = campoGeneros.replace("\"[", "[");
-                                        campoGeneros = campoGeneros.replace("]\"", "]");
-                                        campoGeneros = campoGeneros.replace("\\\"", "\"");
+                                        String campoGeneros = peliculas[3].replace("'", "\""); //reemplazar comillas simples por dobles
+                                        campoGeneros = campoGeneros.replace("\"[", "["); //reemplazar "[ por [
+                                        campoGeneros = campoGeneros.replace("]\"", "]"); //reemplazar ]" por ]
+                                        campoGeneros = campoGeneros.replace("\\\"", "\""); //manejar comillas escapadas \"
                                         JSONArray jsonGeneros = new JSONArray(campoGeneros);
                                         for(int i = 0; i<jsonGeneros.length(); i++) {
                                                 JSONObject esteObjeto = jsonGeneros.getJSONObject(i);
@@ -175,6 +184,7 @@ public class CargaDeDatos {
                                                 }
                                                 if (!existeRating) { //existe la lista de ratings pero el rating actual no -> lo agrego.
                                                         unRating = new Rating(idUsuario, idPelicula, rating, fechaRating);
+                                                        unRating.timestampComoDate();//set fecha
                                                         userRatings.add(unRating);
                                                         ratingsCargados++;
                                                 }
@@ -182,19 +192,20 @@ public class CargaDeDatos {
                                                 unRating = new Rating(idUsuario, idPelicula, rating, fechaRating);
                                                 MyList<Rating> ratingsUsuario = new MyLinkedListImpl<>();
                                                 ratingsUsuario.add(unRating);
+                                                unRating.timestampComoDate(); //setear fecha
                                                 ratingsPorUsuario.put(idUsuario, ratingsUsuario);
                                                 ratingsCargados++;
                                         }
                                         if(todasLasPeliculas.contains(idPelicula)){ //agregar la calificación a la pelicula con el mismo id que el id calificacion
                                                 todasLasPeliculas.get(idPelicula).getRatings().add(unRating); //saco la lista de ratings de la pelicula y agrego el rating.
-                                                MyList<Genero> generos = todasLasPeliculas.get(idPelicula).getGeneros().values();
-                                                int tamanio = generos.size();
-                                                for(int i = 0; i<tamanio; i++){
-                                                        Genero esteGen = generos.get(i);
-                                                        int cant = esteGen.getCantidadRatings();
-                                                        cant++;
-                                                        esteGen.setCantidadRatings(cant);
-                                                }
+//                                                MyList<Genero> generos = todasLasPeliculas.get(idPelicula).getGeneros().values();
+//                                                int tamanio = generos.size();
+//                                                for(int i = 0; i<tamanio; i++){
+//                                                        Genero esteGen = generos.get(i);
+//                                                        int cant = esteGen.getCantidadRatings();
+//                                                        cant++;
+//                                                        esteGen.setCantidadRatings(cant);
+//                                                }
                                         }
 
                                 }catch (NumberFormatException e){
@@ -202,15 +213,10 @@ public class CargaDeDatos {
                                 }
 
                         }
-                        long fin = System.currentTimeMillis();
+
+
                         //----------------FIN CARGA DE EVALUACIONES----------------//
-                        System.out.println("Errores de parseo en carga de peliculas: "+getErroresDeParseoPelis());
-                        System.out.println("Errores de parseo en carga de ratings: "+getErroresDeParseoRatings());
-                        System.out.println("Cantidad de peliculas cargadas: "+getPeliculasCargadas());
-                        System.out.println("Cantidad de colecciones guardadas: "+getCantidadDeColecciones());
-                        System.out.println("Cantidad de ratings cargados: "+getRatingsCargados());
-                        System.out.println("Cantidad de generos: "+getCantGeneros());
-                        System.out.println("Tiempo de carga: "+(fin - comienzo)+" ms");
+
 
 
 
@@ -219,8 +225,126 @@ public class CargaDeDatos {
                         //----------------COMIENZA CARGA DE CREDITOS----------------//
 
 
+                        File archivoCreditos = new File("credits.csv");
+                        CSVReader leerCreditos = new CSVReader(new FileReader(archivoCreditos));
+                        String[] creditos;
+                        leerCreditos.readNext(); //saltar encabezado
+                        //pos 0 = JsonArray de cast (actores)
+                        //pos 1 = JsonArray de crew (pos 0 = director)
+                        //pos 2 = id de pelicula
+
+
+                        while((creditos = leerCreditos.readNext()) != null){
+                                linea ++;
+                                if(creditos.length!=3){
+                                        System.out.println("linea incorrecta en "+linea);
+                                        continue;
+                                }
+                                String stringCast = creditos[0];
+                                String stringCrew = creditos[1];
+                                int idPeliculaCreditos = Integer.parseInt(creditos[2]);
+
+                                if(todasLasPeliculas.contains(idPeliculaCreditos)){
+                                        boolean tieneDirector = false;
+                                        Pelicula estaPelicula = todasLasPeliculas.get(idPeliculaCreditos);
+                                        estaPelicula.ratingPromedio();
+                                        Pelicula.comparator = Pelicula.AVG_COMPARATOR;
+                                        MyList<Actor> actoresPelicula = estaPelicula.getActores();
+                                        if(actoresPelicula.isEmpty()){
+                                                //Reemplazar caracteres para obtener json valido
+                                                stringCast = stringCast.replaceAll("(?<=\\w)\"(?=\\w)", "'"); //busca comillas dobles dentro de los campos y las reemplaza por comillas simples.
+                                                stringCast = stringCast.replace("\"[", "["); //reemplaza "[ por [
+                                                stringCast = stringCast.replace("]\"", "]"); //reemplaza ]" por ]
+                                                stringCast = stringCast.replace("None", "null");// remplazar None por null para evitar errores.
+                                                try{
+                                                        //Comienzo a sacar los actores.
+                                                        JSONArray actores = new JSONArray(stringCast);
+                                                        try {
+                                                                for (int i = 0; i < actores.length(); i++) {
+                                                                        JSONObject actor = actores.getJSONObject(i);
+                                                                        int idActor = actor.getInt("id");
+                                                                        String nombreActor = actor.getString("name");
+                                                                        Actor nuevoActor = new Actor(idActor, nombreActor);
+                                                                        actoresPelicula.add(nuevoActor);
+                                                                }
+                                                        } catch (JSONException e) {
+                                                                errorActores++;
+                                                        }
+                                                } catch (JSONException e) {
+                                                        //System.out.println("error parseo de actores de la linea: "+linea);
+                                                        //System.out.println(stringCast);
+                                                        errorListaActores++;
+                                                }
+
+                                        }
+                                        if(todasLasPeliculas.get(idPeliculaCreditos).getDirector()!=null){
+                                                tieneDirector = true;
+                                        }
+
+                                        try {
+                                                if (!tieneDirector) {
+                                                        stringCrew = stringCrew.replaceAll("(?<=\\w)\"(?=\\w)", "'"); //busca comillas dobles dentro de los campos y las reemplaza por comillas simples.
+                                                        stringCrew = stringCrew.replace("\"[", "["); //reemplaza "[ por [
+                                                        stringCrew = stringCrew.replace("]\"", "]"); //reemplaza ]" por ]
+                                                        stringCrew = stringCrew.replace("None", "null");// remplazar None por null para evitar errores.
+                                                        JSONArray crewArray = new JSONArray(stringCrew);
+                                                        //Check si el director está en el primer lugar
+                                                        Director directorEncontrado = null;
+                                                        for(int i = 0; i<crewArray.length(); i++){
+                                                                JSONObject director = crewArray.getJSONObject(i);
+                                                                if (director.get("job") == "Director" || director.get("job").equals("Director")){
+                                                                        if(!directores.contains(director.getString("name"))){
+                                                                                directorEncontrado = new Director(director.getInt("id"), director.getString("name"));
+                                                                                directores.put(directorEncontrado.getNombre(), directorEncontrado);
+                                                                        }
+                                                                        else{directorEncontrado=directores.get(director.getString("name"));}
+                                                                }
+                                                        }
+                                                        if(directorEncontrado!=null){
+                                                                MySearchBinaryTreeImpl<Double, Pelicula> peliculasDirigidas = directorEncontrado.getPeliculasPorCalificacion();
+                                                                if(!peliculasDirigidas.contains(estaPelicula.getAvgRating())){
+                                                                        directorEncontrado.agregarPelicula(estaPelicula);
+                                                                        int cantPeliculas = directorEncontrado.getCantidadDePeliculas() + 1;
+                                                                        directorEncontrado.setCantidadDePeliculas(cantPeliculas);
+                                                                        int cant = getCantidadCreditos();
+                                                                        cant++;
+                                                                        setCantidadCreditos(cant);
+                                                                }
+                                                        }
+                                                }
+                                        } catch (JSONException e) {
+                                                //System.out.println("error parseo de director en linea: "+linea);
+                                                //System.out.println(stringCrew);
+                                                errorDirectores++;
+                                        }
+
+                                }
+                                //else{System.out.println("Pelicula no existe");}
+
+                        }
+
 
                         //----------------FIN CARGA DE CREDITOS----------------//
+
+                        //----------------TESTS----------------//
+
+                        long fin = System.currentTimeMillis();
+                        //System.out.println("Errores de parseo en carga de peliculas: "+getErroresDeParseoPelis());
+                        //System.out.println("Errores de parseo en carga de ratings: "+getErroresDeParseoRatings());
+                        System.out.println("Cantidad de peliculas cargadas: "+getPeliculasCargadas());
+                        System.out.println("Cantidad de colecciones guardadas: "+getCantidadDeColecciones());
+                        System.out.println("Cantidad de ratings cargados: "+getRatingsCargados());
+                        System.out.println("Cantidad de créditos cargados: "+getCantidadCreditos());
+                        //System.out.println("Cantidad de generos: "+getCantGeneros());
+//                        System.out.println(actorCargado);
+//                        System.out.println(errorActores);
+//                        System.out.println(errorListaActores);
+//                        System.out.println(errorDirectores);
+                        System.out.println("Tiempo de carga: "+(fin - comienzo)+" ms");
+                        Pelicula.comparator = Pelicula.AVG_COMPARATOR;
+                        MyList<Director> directoresLista = directores.values();
+
+
 
 
                 } catch (FileNotFoundException e) {
@@ -231,5 +355,11 @@ public class CargaDeDatos {
                     throw new RuntimeException(e.getMessage(), e);
                 }
 
+
+
         }
+
+
+
+
 }

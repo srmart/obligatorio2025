@@ -7,12 +7,12 @@ public class Genero implements Comparable<Genero>{
 
 
     private int id;
-    private String genero;
+    private String nombre;
     private Integer cantidadRatings;
 
-    public Genero(int id, String genero){
+    public Genero(int id, String nombre){
         this.id = id;
-        this.genero = genero;
+        this.nombre = nombre;
     }
 
     @Override

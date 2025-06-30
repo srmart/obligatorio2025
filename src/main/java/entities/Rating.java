@@ -13,6 +13,7 @@ public class Rating {
     private int idPelicula;
     private double rating;
     private long timestamp;
+    private LocalDate fecha;
 
     public Rating(int idUsuario, int idPelicula, double rating, long timestamp) {
         this.idUsuario = idUsuario;
@@ -25,7 +26,10 @@ public class Rating {
         long timestamp = this.getTimestamp();
         Instant instant = Instant.ofEpochSecond(timestamp);
         ZoneId zoneId = ZoneId.systemDefault();
-        return instant.atZone(zoneId).toLocalDate();
+        LocalDate fecha = instant.atZone(zoneId).toLocalDate();
+        setFecha(fecha);
+        return fecha;
     }
+
 
 }
